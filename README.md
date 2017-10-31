@@ -10,3 +10,5 @@ pip install -r requirements.txt # Please, check Telethon version, only 0.11.5 is
 python run.py
 ```
 Edit [this line](https://github.com/Kylmakalle/TGC2BU/blob/master/updates_handler.py#L107) for your needs
+
+And [this](https://github.com/Kylmakalle/TGC2BU/blob/master/updates_handler.py#L199) If you care about non-bot's/via-bot's messages
