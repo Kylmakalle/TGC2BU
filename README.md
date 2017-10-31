@@ -13,7 +13,7 @@ python run.py
 ```
 Edit [this line](https://github.com/Kylmakalle/TGC2BU/blob/master/updates_handler.py#L107) for your needs
 
-And [this](https://github.com/Kylmakalle/TGC2BU/blob/master/updates_handler.py#L200) If you care about non-bot's/via-bot's messages
+And [this](https://github.com/Kylmakalle/TGC2BU/blob/master/updates_handler.py#L198) If you care about non-bot's/via-bot's messages
 
 In your code you can do something like this:
 ```python
