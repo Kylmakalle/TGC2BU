@@ -4,8 +4,7 @@ from getpass import getpass
 from pprint import pprint
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
-from telethon.tl.types import UpdateShort
-from telethon.tl.types import Updates
+from telethon.tl.types import UpdateShort, UpdatesTg
 
 
 def bytes_to_string(byte_count):
@@ -19,11 +18,12 @@ def bytes_to_string(byte_count):
                              [' bytes', 'KB', 'MB', 'GB', 'TB'][suffix_index])
 
 
-class InteractiveTelegramClient(TelegramClient):
-    def __init__(self, session_user_id, user_phone, api_id, api_hash,
-                 proxy=None):
+class ClientUpdatesTelegramClient(TelegramClient):
+    def __init__(self, session_user_id, user_phone, api_id, api_hash, proxy=None):
         print('Initializing interactive example...')
         super().__init__(session_user_id, api_id, api_hash, proxy)
+        # super().__init__(session_user_id, api_id, api_hash, connection_mode, proxy, update_workers)
+
         ### --- Maybe we will need it later --- ###
         """# Store all the found media in memory here,
         # so it can be downloaded if the user wants
@@ -104,6 +104,7 @@ class InteractiveTelegramClient(TelegramClient):
         try:
             update = convert_update(update_object.to_dict(), update_object)
             if update:
+                ### Do ANYTHING you want with update there ###
                 pprint(update)
         except:
             print('Error: {}'.format(traceback.format_exc()))
@@ -179,7 +180,6 @@ def convert_update(update, update_type):
            'delete_chat_photo': None, 'group_chat_created': None, 'supergroup_chat_created': None,
            'channel_chat_created': None, 'migrate_to_chat_id': None, 'migrate_from_chat_id': None,
            'pinned_message': None, 'invoice': None, 'successful_payment': None}
-    print(type(update_type))
     if isinstance(update_type, UpdatesTg):
         for i in range(len(update['updates'])):
 
@@ -203,7 +203,6 @@ def convert_update(update, update_type):
                     res['from_user'] = form_user_info(update['users'], update['updates'][i]['message']['from_id'])
                 if update['updates'][i]['message'].get('via_bot_id'):
                     res['via_bot'] = form_user_info(update['users'], update['updates'][i]['message']['via_bot_id'])
-
                 # Chat info
                 if update['chats']:
                     res['chat'] = form_chat_info(update['chats'], update['updates'][i]['message']['to_id'])
@@ -398,7 +397,6 @@ def convert_update(update, update_type):
 
                     if update['updates'][i]['message']['media'].get('caption'):
                         res['caption'] = update['updates'][i]['message']['media']['caption']
-
     elif isinstance(update_type, UpdateShort) and update['update'].get('chat_id') and 'action' in update['update']:
         res['content_type'] = 'action'
         if update['update']['action']:
@@ -412,6 +410,5 @@ def convert_update(update, update_type):
     else:
         # Other Updates
         return
-
     if res['content_type']:  # A bit tricky but fast
         return res

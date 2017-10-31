@@ -1,6 +1,7 @@
 import traceback
 from credentials import api_id, api_hash, phone_number
-from updates_handler import InteractiveTelegramClient
+from updates_handler import ClientUpdatesTelegramClient
+# from telethon.network.connection import ConnectionMode
 
 
 def load_settings(path='api/settings'):
@@ -22,17 +23,19 @@ def load_settings(path='api/settings'):
 if __name__ == '__main__':
     # Load the settings and initialize the client
     # settings = load_settings()
+    # kwargs = {'connection_mode': ConnectionMode.TCP_FULL}
     kwargs = {}
     """if settings.get('socks_proxy'):
         import socks  # $ pip install pysocks
         host, port = settings['socks_proxy'].split(':')
         kwargs = dict(proxy=(socks.SOCKS5, host, int(port)))"""
 
-    client = InteractiveTelegramClient(
+    client = ClientUpdatesTelegramClient(
         session_user_id='userupdates',
         user_phone=phone_number,
         api_id=api_id,
         api_hash=api_hash,
+        # update_workers=4,  # More - faster??
         **kwargs)
 
     print('Initialization done!')
