@@ -135,7 +135,8 @@ def form_user_info(users, from_id):
             'username': current_user.get('username'),
             'last_name': current_user.get('last_name'),
             'language_code': current_user.get(
-                'lang_code')}  # seems like 'language_code' is always 'None' for bots in MTProto
+                'lang_code'),  # seems like 'language_code' is always 'None' for bots in MTProto
+            'is_bot': current_user.get('bot')}
 
 
 def form_chat_info(chats, to_id):
