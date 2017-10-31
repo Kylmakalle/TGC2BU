@@ -136,7 +136,7 @@ def form_user_info(users, from_id):
             'last_name': current_user.get('last_name'),
             'language_code': current_user.get(
                 'lang_code'),  # seems like 'language_code' is always 'None' for bots in MTProto
-            'is_bot': current_user.get('bot')}
+            'is_bot': True if current_user.get('bot') else False}
 
 
 def form_chat_info(chats, to_id):
@@ -158,7 +158,7 @@ def form_chat_info(chats, to_id):
             all_members_are_administrators = True
             chat_id = -1 * current_chat['id']
 
-    return {'type': chat_type, 'last_name': current_chat.get('last_name'), 'first_name': current_chat.get('first_name'),
+    return {'type': chat_type,
             'username': current_chat.get('username'),
             'id': chat_id, 'title': current_chat.get('title'),
             'all_members_are_administrators': all_members_are_administrators}
@@ -183,7 +183,6 @@ def convert_update(update, update_type):
            'pinned_message': None, 'invoice': None, 'successful_payment': None}
     if isinstance(update_type, UpdatesTg):
         for i in range(len(update['updates'])):
-
             if len(update['users']):
                 anonymous = False
             else:
@@ -196,10 +195,8 @@ def convert_update(update, update_type):
                     if usr['bot']:
                         is_bot = True
                         break
-
             if update['updates'][i].get('message') and (update['updates'][i]['message'].get('via_bot_id') or is_bot):
                 #  User/Bot info
-
                 if not anonymous:
                     res['from_user'] = form_user_info(update['users'], update['updates'][i]['message']['from_id'])
                 if update['updates'][i]['message'].get('via_bot_id'):
@@ -241,17 +238,19 @@ def convert_update(update, update_type):
 
                 elif update['updates'][i]['message']['media']:
                     # Photo
-                    if update['updates'][i]['message']['media'].get('document'):
-                        if list(update['updates'][i]['message']['media'].keys())[0] == 'photo':
-                            res['content_type'] = 'photo'
-                            res['photo'] = []
-                            for pht in update['updates'][i]['message']['media']['photo']['sizes']:
-                                res['photo'].append(
-                                    {'width': pht['w'], 'height': pht['h'], 'file_size': pht['size'], 'file_id': None})
+                    if list(update['updates'][i]['message']['media'].keys())[0] == 'photo':
+                        res['content_type'] = 'photo'
+                        res['photo'] = []
+                        for pht in update['updates'][i]['message']['media']['photo']['sizes']:
+                            res['photo'].append(
+                                {'width': pht['w'], 'height': pht['h'], 'file_size': pht.get('size'), 'file_id': None,
+                                 'bytes': pht.get('bytes')})
 
-                        elif list(update['updates'][i]['message']['media'].keys())[0] == 'document' and 'webp' in str(
+                    elif update['updates'][i]['message']['media'].get('document'):
+
+                        if list(update['updates'][i]['message']['media'].keys())[0] == 'document' and 'webp' in str(
                                 update['updates'][i]['message']['media']['document'].get('mime_type')):
-                            # Sticker)
+                            # Sticker
                             res['content_type'] = 'sticker'
                             res['sticker'] = {'file_id': None}
                             res['sticker']['width'] = \
@@ -407,9 +406,8 @@ def convert_update(update, update_type):
         res['date'] = convert_time(update['date'])
         res['from_user'] = {'id': update['update']['user_id']}
         res['chat'] = {'id': update['update']['chat_id']}
-
     else:
         # Other Updates
         return
     if res['content_type']:  # A bit tricky but fast
-        return res
+        return {k: v for k, v in res.items() if v is not None}
