@@ -26,7 +26,7 @@ else:
 
 ## Supported Types
 
-**TGC2BU** supports all message types according to [Bot API docs](https://core.telegram.org/bots/api#message), but with small nuances.
+**TGC2BU** supports _almost all_ message types according to [Bot API docs](https://core.telegram.org/bots/api#message), but with small nuances.
 
 Every **TGC2BU** update is marked with `'mtproto': True`
 
